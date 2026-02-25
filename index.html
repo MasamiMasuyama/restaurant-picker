@@ -790,11 +790,7 @@ async function fetchRestaurants() {
 async function apiSave(restaurant) {
   setSyncStatus('syncing', '保存中…');
   try {
-    await fetch(GAS_URL, {
-      method: 'POST',
-      redirect: 'follow',
-      body: JSON.stringify({ action: 'save', restaurant }),
-    });
+    await jsonp(GAS_URL + '?action=save&data=' + encodeURIComponent(JSON.stringify(restaurant)) + '&v=' + Date.now());
     setSyncStatus('ok', '保存しました ✓');
   } catch(e) {
     setSyncStatus('error', '保存失敗 — 再試行してください');
@@ -804,11 +800,7 @@ async function apiSave(restaurant) {
 async function apiDelete(id) {
   setSyncStatus('syncing', '削除中…');
   try {
-    await fetch(GAS_URL, {
-      method: 'POST',
-      redirect: 'follow',
-      body: JSON.stringify({ action: 'delete', id }),
-    });
+    await jsonp(GAS_URL + '?action=delete&id=' + id + '&v=' + Date.now());
     setSyncStatus('ok', '削除しました ✓');
   } catch(e) {
     setSyncStatus('error', '削除失敗 — 再試行してください');
