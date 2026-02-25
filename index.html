@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>増山家のご飯どこにする？</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red:    #FF4D6D;
+    --orange: #FF8C42;
+    --yellow: #FFD166;
+    --green:  #06D6A0;
+    --blue:   #118AB2;
+    --purple: #9B5DE5;
+    --pink:   #FF85A1;
+    --bg:     #FFFBF5;
+    --card:   #FFFFFF;
+    --text:   #1A1A2E;
+    --muted:  #888;
+    --border: #F0EBE3;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    max-width: 480px;
+    margin: 0 auto;
+    overflow-x: hidden;
+  }
+
+  /* ===== HEADER ===== */
+  header {
+    background: #1A1A2E;
+    padding: 20px 18px 50px;
+    position: relative;
+    overflow: hidden;
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -20px; left: 0; right: 0; height: 40px;
+    background: var(--bg);
+    border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  }
+  .header-bg-dots {
+    position: absolute; inset: 0; pointer-events: none;
+  }
+  .header-inner {
+    position: relative; z-index: 2;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .header-logo {
+    width: 62px; height: 62px; flex-shrink: 0;
+  }
+  .header-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 21px;
+    line-height: 1.2;
+    letter-spacing: 0.02em;
+    background: linear-gradient(90deg, #FFD166, #FF8C42, #FF4D6D, #9B5DE5);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .header-sub {
+    font-size: 11px; color: rgba(255,255,255,0.6);
+    margin-top: 4px; letter-spacing: 0.05em;
+  }
+
+  /* ===== NAV ===== */
+  nav {
+    display: flex; gap: 10px; padding: 18px 14px 8px;
+  }
+  .tab {
+    flex: 1; padding: 12px 4px; border: none; border-radius: 16px;
+    background: white; color: var(--muted);
+    font-family: 'M PLUS Rounded 1c', sans-serif; font-size: 13px; font-weight: 800;
+    cursor: pointer; transition: all 0.2s;
+    box-shadow: 0 2px 0px #DDD, 0 4px 12px rgba(0,0,0,0.06);
+  }
+  .tab.active {
+    background: var(--text); color: white;
+    box-shadow: 0 2px 0 #000, 0 4px 14px rgba(26,26,46,0.3);
+    transform: translateY(-1px);
+  }
+
+  .page { display: none; padding: 4px 14px 90px; }
+  .page.active { display: block; }
+
+  /* ===== SPIN CARD ===== */
+  .spin-card {
+    background: white;
+    border-radius: 24px;
+    border: 3px solid var(--text);
+    box-shadow: 6px 6px 0 var(--text);
+    padding: 22px 18px 20px;
+    text-align: center;
+    margin-bottom: 14px;
+    position: relative; overflow: hidden;
+  }
+  .spin-section-label {
+    display: flex; align-items: center; gap: 6px; justify-content: center;
+    font-size: 11px; font-weight: 800; color: var(--muted);
+    margin-bottom: 10px; letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  .divider {
+    border: none; border-top: 2px dashed #EEE;
+    margin: 14px 0;
+  }
+  .spin-result {
+    font-family: 'Fredoka One', cursive;
+    font-size: 28px;
+    color: var(--text);
+    min-height: 40px;
+    transition: opacity 0.1s;
+    letter-spacing: 0.02em;
+  }
+  .spin-result.found { color: var(--red); }
+  .spin-detail {
+    font-size: 12px; color: var(--muted); margin-top: 6px; min-height: 20px; font-weight: 700;
+  }
+  .spin-btn {
+    margin-top: 16px; width: 100%; padding: 16px;
+    background: var(--red);
+    color: white; border: 3px solid var(--text); border-radius: 18px;
+    font-family: 'Fredoka One', cursive; font-size: 20px;
+    cursor: pointer; letter-spacing: 0.04em;
+    box-shadow: 4px 4px 0 var(--text);
+    transition: transform 0.08s, box-shadow 0.08s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+  }
+  .spin-btn:active {
+    transform: translate(3px, 3px);
+    box-shadow: 1px 1px 0 var(--text);
+  }
+
+  /* ===== FILTER CHIPS ===== */
+  .filter-row {
+    display: flex; gap: 7px; flex-wrap: wrap;
+    margin-bottom: 2px; justify-content: center;
+  }
+  .filter-chip {
+    padding: 5px 12px; border-radius: 20px;
+    border: 2px solid var(--border);
+    background: #F8F8F8;
+    font-size: 11px; font-weight: 800;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    cursor: pointer; transition: all 0.12s; color: var(--muted);
+  }
+  .filter-chip.on {
+    border-color: var(--text); background: var(--text); color: white;
+    box-shadow: 2px 2px 0 var(--muted);
+  }
+
+  /* ===== DISCOVER CARD ===== */
+  .discover-card {
+    background: var(--yellow);
+    border-radius: 22px; border: 3px solid var(--text);
+    box-shadow: 6px 6px 0 var(--text);
+    padding: 18px 16px; margin-bottom: 14px;
+    position: relative; overflow: hidden;
+  }
+  .discover-card-title {
+    font-family: 'Fredoka One', cursive; font-size: 16px;
+    color: var(--text); margin-bottom: 12px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .discover-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+  .discover-chip {
+    padding: 7px 14px; border-radius: 20px;
+    background: white; border: 2px solid var(--text);
+    font-family: 'M PLUS Rounded 1c', sans-serif; font-size: 12px; font-weight: 800;
+    cursor: pointer; color: var(--text);
+    box-shadow: 2px 2px 0 var(--text);
+    transition: transform 0.08s, box-shadow 0.08s;
+  }
+  .discover-chip:active { transform: translate(2px,2px); box-shadow: none; }
+
+  /* ===== SEARCH ===== */
+  .search-box {
+    display: flex; align-items: center;
+    background: white; border-radius: 16px;
+    border: 3px solid var(--text);
+    box-shadow: 4px 4px 0 var(--text);
+    padding: 10px 16px; margin-bottom: 12px; gap: 8px;
+  }
+  .search-box input {
+    flex: 1; border: none; outline: none;
+    font-family: 'M PLUS Rounded 1c', sans-serif; font-size: 14px; font-weight: 700;
+    background: transparent; color: var(--text);
+  }
+
+  /* ===== RESTAURANT CARDS ===== */
+  .restaurant-card {
+    background: white;
+    border-radius: 20px; border: 3px solid var(--text);
+    padding: 14px 16px; margin-bottom: 12px;
+    cursor: pointer; transition: transform 0.08s, box-shadow 0.08s;
+    position: relative; overflow: hidden;
+  }
+  .restaurant-card { box-shadow: 5px 5px 0 var(--text); }
+  .restaurant-card:active { transform: translate(4px,4px); box-shadow: 1px 1px 0 var(--text); }
+
+  /* カードの左ボーダーカラー */
+  .restaurant-card.visited { border-left: 6px solid var(--green); }
+  .restaurant-card.new     { border-left: 6px solid var(--orange); }
+  .restaurant-card.want    { border-left: 6px solid var(--purple); }
+
+  .rc-deco { position: absolute; right: 10px; bottom: 8px; pointer-events: none; opacity: 0.1; }
+  .rc-top { display: flex; align-items: flex-start; justify-content: space-between; }
+  .rc-name {
+    font-family: 'Fredoka One', cursive; font-size: 18px; flex: 1; color: var(--text);
+    letter-spacing: 0.02em;
+  }
+  .rc-badge {
+    font-size: 10px; color: white; background: var(--orange);
+    border-radius: 8px; padding: 3px 9px; margin-left: 8px;
+    white-space: nowrap; margin-top: 4px; font-weight: 800;
+    border: 1.5px solid var(--text);
+  }
+  .rc-badge.new-b  { background: var(--red); }
+  .rc-badge.want-b { background: var(--purple); }
+  .rc-meta {
+    display: flex; gap: 8px; margin-top: 7px; font-size: 11px;
+    color: var(--muted); flex-wrap: wrap; font-weight: 700;
+  }
+  .rc-meta span {
+    background: #F5F5F5; border-radius: 6px; padding: 2px 7px;
+  }
+  .rc-stars { color: var(--yellow); }
+  .rc-memo { font-size: 11px; color: #AAA; margin-top: 7px; line-height: 1.5; font-weight: 700; }
+
+  /* ===== FAB ===== */
+  .fab {
+    position: fixed; bottom: 26px; right: 20px;
+    width: 60px; height: 60px; border-radius: 50%;
+    background: var(--red); color: white; border: 3px solid var(--text);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 4px 4px 0 var(--text);
+    cursor: pointer; z-index: 100;
+    transition: transform 0.08s, box-shadow 0.08s;
+  }
+  .fab:active { transform: translate(3px,3px); box-shadow: 1px 1px 0 var(--text); }
+
+  /* ===== MODAL ===== */
+  .modal-bg {
+    display: none; position: fixed; inset: 0;
+    background: rgba(26,26,46,0.5); z-index: 200;
+    align-items: flex-end; justify-content: center;
+  }
+  .modal-bg.open { display: flex; }
+  .modal {
+    background: var(--bg); width: 100%; max-width: 480px;
+    border-radius: 28px 28px 0 0;
+    border-top: 3px solid var(--text);
+    border-left: 3px solid var(--text);
+    border-right: 3px solid var(--text);
+    padding: 20px 18px 40px;
+    animation: slideUp 0.25s cubic-bezier(.34,1.2,.64,1);
+    max-height: 92vh; overflow-y: auto;
+  }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+  .modal-handle {
+    width: 44px; height: 5px; background: #DDD;
+    border-radius: 3px; margin: 0 auto 18px;
+  }
+  .modal h2 {
+    font-family: 'Fredoka One', cursive; font-size: 20px;
+    margin-bottom: 18px; color: var(--text); letter-spacing: 0.02em;
+  }
+  .form-group { margin-bottom: 14px; }
+  .form-group label {
+    font-size: 10px; color: var(--muted); font-weight: 800;
+    margin-bottom: 5px; display: block; letter-spacing: 0.1em; text-transform: uppercase;
+  }
+  .form-group input, .form-group textarea, .form-group select {
+    width: 100%; padding: 11px 14px;
+    border: 2.5px solid var(--text); border-radius: 12px;
+    font-family: 'M PLUS Rounded 1c', sans-serif; font-size: 14px; font-weight: 700;
+    background: white; outline: none; transition: box-shadow 0.15s; color: var(--text);
+    box-shadow: 3px 3px 0 var(--text);
+  }
+  .form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+    box-shadow: 3px 3px 0 var(--red);
+    border-color: var(--red);
+  }
+  .form-group textarea { resize: none; height: 80px; }
+  .form-row { display: flex; gap: 10px; }
+  .form-row .form-group { flex: 1; }
+
+  /* Stars */
+  .star-input { display: flex; gap: 1px; }
+  .star-input span { font-size: 26px; cursor: pointer; color: #DDD; transition: color 0.1s, transform 0.1s; line-height: 1; }
+  .star-input span:hover { transform: scale(1.15); }
+  #star-masami span.on { color: #4A90E2; transform: scale(1.1); }
+  #star-yuko   span.on { color: #FF85A1; transform: scale(1.1); }
+  #star-kotomi span.on { color: #FF8C42; transform: scale(1.1); }
+
+  .stars-masami { color: #4A90E2; }
+  .stars-yuko   { color: #FF85A1; }
+  .stars-kotomi { color: #FF8C42; }
+
+  /* Genre chips */
+  .genre-check-grid { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 4px; }
+  .genre-chip-check {
+    padding: 6px 12px; border-radius: 20px; border: 2px solid #DDD;
+    background: white; font-family: 'M PLUS Rounded 1c', sans-serif; font-size: 11px;
+    font-weight: 800; color: var(--muted); cursor: pointer; transition: all 0.12s;
+  }
+  .genre-chip-check.checked {
+    border-color: var(--text); background: var(--text); color: white;
+    box-shadow: 2px 2px 0 var(--muted);
+  }
+  .genre-add-row { display: flex; gap: 8px; margin-top: 8px; }
+  .genre-add-row input {
+    flex: 1; padding: 8px 12px; border: 2px solid #DDD; border-radius: 10px;
+    font-family: 'M PLUS Rounded 1c', sans-serif; font-size: 13px; font-weight: 700;
+    background: white; outline: none; color: var(--text); box-shadow: none;
+  }
+  .genre-add-row input:focus { border-color: var(--red); }
+  .genre-add-btn {
+    padding: 8px 16px; background: var(--red); color: white;
+    border: 2px solid var(--text); border-radius: 10px;
+    font-family: 'Fredoka One', cursive; font-size: 16px;
+    cursor: pointer; box-shadow: 2px 2px 0 var(--text);
+  }
+
+  /* Meal chips */
+  .meal-scene-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
+  .meal-chip {
+    display: flex; align-items: center; gap: 5px;
+    padding: 8px 14px; border-radius: 14px; border: 2px solid #DDD;
+    background: white; font-family: 'M PLUS Rounded 1c', sans-serif; font-size: 13px;
+    font-weight: 800; color: var(--muted); cursor: pointer; transition: all 0.12s; user-select: none;
+  }
+  .meal-chip.checked {
+    border-color: var(--text); background: var(--yellow); color: var(--text);
+    box-shadow: 2px 2px 0 var(--text);
+  }
+
+  /* Buttons */
+  .btn-row { display: flex; gap: 10px; margin-top: 20px; }
+  .btn-save {
+    flex: 2; padding: 14px;
+    background: var(--green); color: white;
+    border: 2.5px solid var(--text); border-radius: 14px;
+    font-family: 'Fredoka One', cursive; font-size: 18px;
+    cursor: pointer; box-shadow: 4px 4px 0 var(--text);
+    transition: transform 0.08s, box-shadow 0.08s;
+  }
+  .btn-save:active { transform: translate(3px,3px); box-shadow: 1px 1px 0 var(--text); }
+  .btn-cancel {
+    flex: 1; padding: 14px; background: white; color: var(--muted);
+    border: 2.5px solid #DDD; border-radius: 14px;
+    font-family: 'M PLUS Rounded 1c', sans-serif; font-size: 14px; font-weight: 800;
+    cursor: pointer; box-shadow: 3px 3px 0 #DDD;
+  }
+  .btn-delete {
+    padding: 14px 16px; background: #FFE8E8; color: var(--red);
+    border: 2.5px solid var(--red); border-radius: 14px; font-size: 18px;
+    cursor: pointer; box-shadow: 3px 3px 0 var(--red);
+  }
+
+  /* Detail */
+  .detail-name {
+    font-family: 'Fredoka One', cursive; font-size: 26px;
+    margin-bottom: 10px; color: var(--text); letter-spacing: 0.02em;
+  }
+  .detail-meta { display: flex; gap: 7px; font-size: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+  .detail-meta span {
+    background: #F2F2F2; border-radius: 8px; padding: 4px 10px;
+    font-weight: 800; color: var(--text);
+    border: 1.5px solid #DDD;
+  }
+  .detail-memo {
+    background: white; border-radius: 14px; padding: 14px;
+    font-size: 13px; line-height: 1.7; color: #999; min-height: 54px;
+    margin-bottom: 14px; font-weight: 700;
+    border: 2px solid #EEE;
+  }
+  .map-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 10px 18px; background: var(--blue); color: white;
+    border: 2.5px solid var(--text); border-radius: 12px;
+    font-family: 'M PLUS Rounded 1c', sans-serif; font-size: 13px; font-weight: 800;
+    cursor: pointer; text-decoration: none;
+    box-shadow: 3px 3px 0 var(--text);
+  }
+
+  .empty { text-align: center; padding: 44px 20px; color: var(--muted); font-size: 13px; font-weight: 700; }
+  .empty-icon { font-size: 56px; margin-bottom: 12px; }
+
+  /* ローディング */
+  .loading-overlay {
+    position: fixed; inset: 0; background: rgba(26,26,46,0.6);
+    z-index: 500; display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 16px;
+  }
+  .loading-overlay.hidden { display: none; }
+  .loading-spinner {
+    width: 52px; height: 52px;
+    border: 5px solid rgba(255,255,255,0.2);
+    border-top-color: #FFD166;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { color: white; font-size: 14px; font-weight: 800; letter-spacing: 0.05em; }
+
+  /* 同期ステータスバー */
+  .sync-bar {
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 6px 14px; font-size: 11px; font-weight: 800;
+    letter-spacing: 0.05em; transition: all 0.3s;
+  }
+  .sync-bar.syncing  { background: #FFF9E6; color: #C47A1E; }
+  .sync-bar.ok       { background: #E6FFF5; color: #1A7A52; }
+  .sync-bar.error    { background: #FFE6E6; color: #C0392B; }
+  .sync-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .sync-bar.syncing .sync-dot { background: #FFB347; animation: pulse 1s infinite; }
+  .sync-bar.ok      .sync-dot { background: #06D6A0; }
+  .sync-bar.error   .sync-dot { background: var(--red); }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header>
+  <!-- カラフルな背景ドット・図形 -->
+  <svg class="header-bg-dots" viewBox="0 0 480 130" preserveAspectRatio="xMidYMid slice" fill="none">
+    <circle cx="50"  cy="20"  r="28" fill="#FF4D6D" opacity="0.25"/>
+    <circle cx="420" cy="30"  r="36" fill="#9B5DE5" opacity="0.2"/>
+    <circle cx="240" cy="80"  r="50" fill="#FFD166" opacity="0.1"/>
+    <circle cx="160" cy="15"  r="18" fill="#06D6A0" opacity="0.2"/>
+    <circle cx="380" cy="90"  r="22" fill="#FF8C42" opacity="0.2"/>
+    <rect x="10"  y="60" width="20" height="20" rx="5" fill="#FFD166" opacity="0.3" transform="rotate(20 20 70)"/>
+    <rect x="430" y="10" width="16" height="16" rx="4" fill="#06D6A0" opacity="0.3" transform="rotate(-15 438 18)"/>
+    <rect x="300" y="55" width="14" height="14" rx="3" fill="#FF85A1" opacity="0.35" transform="rotate(30 307 62)"/>
+    <!-- 星 -->
+    <path d="M100 25 L102 31 L109 31 L103.5 35 L106 41 L100 37 L94 41 L96.5 35 L91 31 L98 31Z" fill="#FFD166" opacity="0.5"/>
+    <path d="M360 15 L361.5 19.5 L366 19.5 L362.5 22 L364 27 L360 24 L356 27 L357.5 22 L354 19.5 L358.5 19.5Z" fill="#FF85A1" opacity="0.5"/>
+    <path d="M460 70 L461.2 73.6 L465 73.6 L462 75.8 L463.2 79.5 L460 77.2 L456.8 79.5 L458 75.8 L455 73.6 L458.8 73.6Z" fill="#06D6A0" opacity="0.45"/>
+    <!-- ×マーク -->
+    <path d="M200 60 L208 68 M208 60 L200 68" stroke="#FF4D6D" stroke-width="3" stroke-linecap="round" opacity="0.3"/>
+    <path d="M270 25 L276 31 M276 25 L270 31" stroke="#9B5DE5" stroke-width="2.5" stroke-linecap="round" opacity="0.3"/>
+  </svg>
+
+  <div class="header-inner">
+    <!-- ロゴ：ポップなどんぶりキャラ -->
+    <svg class="header-logo" viewBox="0 0 62 62" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- 光輪 -->
+      <circle cx="31" cy="31" r="29" fill="none" stroke="#FFD166" stroke-width="3" stroke-dasharray="6 4" opacity="0.7"/>
+      <!-- どんぶり本体 -->
+      <ellipse cx="31" cy="27" rx="20" ry="11" fill="white"/>
+      <path d="M11 32 Q13 50 31 52 Q49 50 51 32Z" fill="white"/>
+      <!-- 麺カラフル -->
+      <path d="M17 30 Q21 25 25 30 Q29 35 33 30 Q37 25 41 30" stroke="#FF4D6D" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M19 34 Q23 30 27 34 Q31 38 35 34" stroke="#FFD166" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <!-- 目 -->
+      <circle cx="26" cy="36" r="2" fill="#1A1A2E"/>
+      <circle cx="36" cy="36" r="2" fill="#1A1A2E"/>
+      <circle cx="27" cy="35.3" r="0.7" fill="white"/>
+      <circle cx="37" cy="35.3" r="0.7" fill="white"/>
+      <!-- 口 -->
+      <path d="M28 40 Q31 43 34 40" stroke="#1A1A2E" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <!-- ほっぺ -->
+      <ellipse cx="22" cy="39" rx="3" ry="2" fill="#FF85A1" opacity="0.7"/>
+      <ellipse cx="40" cy="39" rx="3" ry="2" fill="#FF85A1" opacity="0.7"/>
+      <!-- 箸 -->
+      <line x1="34" y1="10" x2="44" y2="24" stroke="#FF8C42" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="38" y1="8" x2="48" y2="22" stroke="#FFD166" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>
+    <div>
+      <div class="header-title">増山家のご飯どこにする？</div>
+      <div class="header-sub">🍔 FAMILY RESTAURANT PICKER</div>
+    </div>
+  </div>
+</header>
+
+<nav>
+  <button class="tab active" onclick="switchPage('random', this)">🎲 ランダム</button>
+  <button class="tab" onclick="switchPage('list', this)">📋 リスト</button>
+</nav>
+<div class="sync-bar ok" id="sync-bar">
+  <div class="sync-dot"></div>
+  <span id="sync-text">同期済み</span>
+</div>
+
+<!-- ===== ランダムページ ===== -->
+<div id="page-random" class="page active">
+  <div class="spin-card">
+    <!-- デコ：右上の食べ物イラスト群 -->
+    <svg style="position:absolute;top:0;right:0;pointer-events:none" width="100" height="100" viewBox="0 0 100 100" fill="none">
+      <circle cx="80" cy="20" r="30" fill="#FFD166" opacity="0.25"/>
+      <circle cx="95" cy="5"  r="18" fill="#FF8C42" opacity="0.2"/>
+      <!-- バーガーアイコン -->
+      <g opacity="0.55" transform="translate(58,8)">
+        <rect x="0" y="14" width="28" height="5" rx="2.5" fill="#FF8C42"/>
+        <rect x="2" y="9"  width="24" height="6" rx="3" fill="#FFD166"/>
+        <rect x="1" y="6"  width="26" height="4" rx="2" fill="#06D6A0"/>
+        <path d="M0 19 Q14 24 28 19" stroke="#FF4D6D" stroke-width="1.5" fill="none"/>
+        <path d="M2 4 Q14 0 26 4 Q28 8 26 8 H2 Q0 8 2 4Z" fill="#C87941"/>
+      </g>
+    </svg>
+    <!-- 左下デコ -->
+    <svg style="position:absolute;bottom:0;left:0;pointer-events:none" width="80" height="80" viewBox="0 0 80 80" fill="none">
+      <circle cx="10" cy="70" r="35" fill="#9B5DE5" opacity="0.12"/>
+      <!-- ピザスライス -->
+      <g opacity="0.4" transform="translate(0,45)">
+        <path d="M5 30 L20 5 L35 30Z" fill="#FF8C42"/>
+        <path d="M5 30 L20 5 L35 30Z" fill="none" stroke="#1A1A2E" stroke-width="1.5" stroke-linejoin="round"/>
+        <circle cx="15" cy="20" r="2.5" fill="#FF4D6D"/>
+        <circle cx="25" cy="22" r="2.5" fill="#FF4D6D"/>
+        <path d="M5 27 Q20 31 35 27" stroke="#FFD166" stroke-width="2" fill="none" stroke-linecap="round"/>
+      </g>
+    </svg>
+
+    <div class="spin-section-label">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1L8.8 5.4H13.5L9.8 8.1L11.5 12.5L7 9.8L2.5 12.5L4.2 8.1L0.5 5.4H5.2Z" fill="#FFD166"/></svg>
+      GENRE FILTER
+    </div>
+    <div class="filter-row" id="genre-filters"></div>
+
+    <hr class="divider">
+
+    <div class="spin-section-label">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="7" cy="7" r="6" stroke="#FF8C42" stroke-width="2"/><path d="M7 4V7L9 9" stroke="#FF8C42" stroke-width="2" stroke-linecap="round"/></svg>
+      SCENE FILTER
+    </div>
+    <div class="filter-row">
+      <button class="filter-chip" id="scene-morning" onclick="toggleScene('morning')">🌅 モーニング</button>
+      <button class="filter-chip" id="scene-lunch"   onclick="toggleScene('lunch')">🌤️ 昼食</button>
+      <button class="filter-chip" id="scene-dinner"  onclick="toggleScene('dinner')">🌙 夕食</button>
+    </div>
+
+    <hr class="divider">
+
+    <div style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:0.08em;margin-bottom:14px">TODAY'S PICK ✨</div>
+    <div id="spin-result" class="spin-result">ボタンを押してね！</div>
+    <div id="spin-detail" class="spin-detail"></div>
+    <button class="spin-btn" onclick="spinRandom()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <rect x="2" y="2" width="20" height="20" rx="5" fill="white" opacity="0.25"/>
+        <circle cx="8"  cy="8"  r="2" fill="white"/>
+        <circle cx="12" cy="12" r="2" fill="white"/>
+        <circle cx="16" cy="16" r="2" fill="white"/>
+        <circle cx="16" cy="8"  r="2" fill="white"/>
+        <circle cx="8"  cy="16" r="2" fill="white"/>
+      </svg>
+      ランダムで決める！
+    </button>
+  </div>
+
+  <!-- Discover card -->
+  <div class="discover-card">
+    <svg style="position:absolute;top:-12px;right:-12px;pointer-events:none;opacity:0.35" width="80" height="80" viewBox="0 0 80 80" fill="none">
+      <circle cx="65" cy="15" r="32" fill="#1A1A2E"/>
+    </svg>
+    <!-- アイスクリームデコ -->
+    <svg style="position:absolute;bottom:8px;right:14px;pointer-events:none;opacity:0.25" width="40" height="50" viewBox="0 0 40 50" fill="none">
+      <ellipse cx="20" cy="18" rx="16" ry="18" fill="#FF85A1"/>
+      <ellipse cx="20" cy="18" rx="10" ry="12" fill="#FFD166"/>
+      <path d="M10 32 L20 50 L30 32Z" fill="#FF8C42"/>
+      <path d="M10 32 L30 32" stroke="#1A1A2E" stroke-width="1.5"/>
+    </svg>
+    <div class="discover-card-title">
+      🗺️ 新しいお店を探す
+    </div>
+    <div class="discover-chips" id="discover-chips"></div>
+  </div>
+</div>
+
+<!-- ===== リストページ ===== -->
+<div id="page-list" class="page">
+  <div class="search-box">
+    <svg width="17" height="17" viewBox="0 0 17 17" fill="none">
+      <circle cx="7.5" cy="7.5" r="5" stroke="#CCC" stroke-width="2.5"/>
+      <path d="M11 11L15 15" stroke="#CCC" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>
+    <input type="text" id="search-input" placeholder="お店や料理を検索…" oninput="renderList()">
+  </div>
+
+  <!-- ジャンルフィルター -->
+  <div style="background:white;border-radius:18px;border:2.5px solid var(--text);box-shadow:4px 4px 0 var(--text);padding:14px 14px 12px;margin-bottom:12px">
+    <div style="font-size:10px;font-weight:800;color:var(--muted);letter-spacing:0.1em;margin-bottom:8px">GENRE FILTER</div>
+    <div class="filter-row" id="list-genre-filters" style="justify-content:flex-start"></div>
+    <div style="border-top:2px dashed #EEE;margin:10px 0 8px"></div>
+    <div style="font-size:10px;font-weight:800;color:var(--muted);letter-spacing:0.1em;margin-bottom:8px">SCENE FILTER</div>
+    <div class="filter-row" style="justify-content:flex-start">
+      <button class="filter-chip" id="list-scene-morning" onclick="toggleListScene('morning')">🌅 モーニング</button>
+      <button class="filter-chip" id="list-scene-lunch"   onclick="toggleListScene('lunch')">🌤️ 昼食</button>
+      <button class="filter-chip" id="list-scene-dinner"  onclick="toggleListScene('dinner')">🌙 夕食</button>
+    </div>
+  </div>
+
+  <div id="restaurant-list"></div>
+</div>
+
+<!-- FAB -->
+<button class="fab" onclick="openAdd()">
+  <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+    <path d="M14 5V23M5 14H23" stroke="white" stroke-width="4" stroke-linecap="round"/>
+  </svg>
+</button>
+
+<!-- ===== 追加/編集モーダル ===== -->
+<div class="modal-bg" id="modal-edit">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <h2 id="modal-title">🍽️ お店を追加</h2>
+    <div class="form-group">
+      <label>SHOP NAME ＊</label>
+      <input type="text" id="f-name" placeholder="例：丸亀製麺 梅田店">
+    </div>
+    <div class="form-row">
+      <div class="form-group" style="flex:2">
+        <label>GENRE（複数選択OK）</label>
+        <div class="genre-check-grid" id="genre-check-grid"></div>
+        <div class="genre-add-row">
+          <input type="text" id="f-genre-custom" placeholder="新しいジャンルを追加…">
+          <button class="genre-add-btn" onclick="addCustomGenre()">＋</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>BUDGET（1人）</label>
+        <select id="f-budget">
+          <option value="~1000">〜1,000円</option>
+          <option value="1000-2000">1〜2千円</option>
+          <option value="2000-4000">2〜4千円</option>
+          <option value="4000+">4千円〜</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>RATING（3人の評価）</label>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:2px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;font-weight:800;color:#4A90E2;width:52px;flex-shrink:0">まさみ</span>
+          <div class="star-input" id="star-masami">
+            <span onclick="setStar('masami',1)">★</span><span onclick="setStar('masami',2)">★</span>
+            <span onclick="setStar('masami',3)">★</span><span onclick="setStar('masami',4)">★</span>
+            <span onclick="setStar('masami',5)">★</span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;font-weight:800;color:#FF85A1;width:52px;flex-shrink:0">ゆうこ</span>
+          <div class="star-input" id="star-yuko">
+            <span onclick="setStar('yuko',1)">★</span><span onclick="setStar('yuko',2)">★</span>
+            <span onclick="setStar('yuko',3)">★</span><span onclick="setStar('yuko',4)">★</span>
+            <span onclick="setStar('yuko',5)">★</span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:12px;font-weight:800;color:#FF8C42;width:52px;flex-shrink:0">ことみ</span>
+          <div class="star-input" id="star-kotomi">
+            <span onclick="setStar('kotomi',1)">★</span><span onclick="setStar('kotomi',2)">★</span>
+            <span onclick="setStar('kotomi',3)">★</span><span onclick="setStar('kotomi',4)">★</span>
+            <span onclick="setStar('kotomi',5)">★</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>STATUS</label>
+      <select id="f-status">
+        <option value="visited">✅ 行ったことある</option>
+        <option value="new">🆕 新しいお店</option>
+        <option value="want">💛 行きたい</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>SCENE（利用シーン）</label>
+      <div class="meal-scene-row">
+        <div class="meal-chip" id="chip-morning" onclick="toggleMealChip('morning')">🌅 モーニング</div>
+        <div class="meal-chip" id="chip-lunch"   onclick="toggleMealChip('lunch')">🌤️ 昼食</div>
+        <div class="meal-chip" id="chip-dinner"  onclick="toggleMealChip('dinner')">🌙 夕食</div>
+      </div>
+      <input type="checkbox" id="f-morning" style="display:none">
+      <input type="checkbox" id="f-lunch"   style="display:none">
+      <input type="checkbox" id="f-dinner"  style="display:none">
+    </div>
+    <div class="form-group">
+      <label>MEMO</label>
+      <textarea id="f-memo" placeholder="例：子供が唐揚げ大好き、駐車場あり、平日ランチがお得"></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn-cancel" onclick="closeModal('modal-edit')">キャンセル</button>
+      <button id="btn-delete-edit" class="btn-delete" onclick="deleteRestaurant()" style="display:none">🗑️</button>
+      <button class="btn-save" onclick="saveRestaurant()">SAVE 💾</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 詳細モーダル ===== -->
+<div class="modal-bg" id="modal-detail">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div id="detail-content"></div>
+    <div class="btn-row">
+      <button class="btn-cancel" onclick="closeModal('modal-detail')">閉じる</button>
+      <button class="btn-save" onclick="editFromDetail()">✏️ 編集</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const GAS_URL = 'https://script.google.com/macros/s/AKfycbyiuuA08uGncVwphQdZ_clegyG4_m70V5wpS4B13f7qzsXN4XYllnYs9r92KgZMeLDRiQ/exec';
+
+let restaurants = [];
+let editingId = null;
+let currentRatings = { masami: 0, yuko: 0, kotomi: 0 };
+let detailId = null;
+let activeGenres = new Set();
+let activeScenes = new Set();
+let listGenres = new Set();
+let listScenes = new Set();
+
+const DEFAULT_GENRES = [
+  '和食・日本食', 'そば・うどん', 'ラーメン', '寿司・海鮮',
+  '洋食・ファミレス', 'イタリアン', '中華料理', '韓国料理',
+  '焼肉', 'お好み焼き・鉄板焼き', '居酒屋',
+  'カフェ・パン', 'デザート・アイス'
+];
+const GENRE_COLORS = {
+  'ラーメン':'#FF4D6D','そば・うどん':'#FF8C42','焼肉':'#FF4D6D',
+  '韓国料理':'#9B5DE5','寿司・海鮮':'#118AB2','イタリアン':'#06D6A0',
+  'カフェ・パン':'#FF85A1','デザート・アイス':'#FF85A1','中華料理':'#FFD166',
+  '洋食・ファミレス':'#06D6A0','和食・日本食':'#FF8C42',
+  'お好み焼き・鉄板焼き':'#FF8C42','居酒屋':'#9B5DE5',
+};
+
+// ===== 同期UI =====
+function setSyncStatus(status, text) {
+  const bar = document.getElementById('sync-bar');
+  const txt = document.getElementById('sync-text');
+  bar.className = 'sync-bar ' + status;
+  txt.textContent = text;
+}
+function showLoading(show) {
+  document.getElementById('loading-overlay').classList.toggle('hidden', !show);
+}
+
+// ===== API =====
+async function fetchRestaurants() {
+  showLoading(true);
+  setSyncStatus('syncing', '読み込み中…');
+  try {
+    const res = await fetch(GAS_URL);
+    restaurants = await res.json();
+    setSyncStatus('ok', '同期済み');
+  } catch(e) {
+    setSyncStatus('error', '読み込み失敗 — オフライン？');
+    restaurants = [];
+  }
+  showLoading(false);
+  renderAll();
+}
+
+async function apiSave(restaurant) {
+  setSyncStatus('syncing', '保存中…');
+  try {
+    await fetch(GAS_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'save', restaurant }),
+    });
+    setSyncStatus('ok', '保存しました ✓');
+  } catch(e) {
+    setSyncStatus('error', '保存失敗 — 再試行してください');
+  }
+}
+
+async function apiDelete(id) {
+  setSyncStatus('syncing', '削除中…');
+  try {
+    await fetch(GAS_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'delete', id }),
+    });
+    setSyncStatus('ok', '削除しました ✓');
+  } catch(e) {
+    setSyncStatus('error', '削除失敗 — 再試行してください');
+  }
+}
+
+// ===== helpers =====
+function budgetLabel(b) { return {'~1000':'〜1,000円','1000-2000':'1〜2千円','2000-4000':'2〜4千円','4000+':'4千円〜'}[b]||b; }
+function statusLabel(s) { return {visited:'✅ 済',new:'🆕 新店',want:'💛 行きたい'}[s]||s; }
+function getAllGenres() {
+  const custom = restaurants.flatMap(r => Array.isArray(r.genres) ? r.genres : []);
+  return [...new Set([...DEFAULT_GENRES, ...custom])];
+}
+function avgStars(r) {
+  const rt = r.ratings || {};
+  const vals = Object.values(rt).filter(v => v > 0);
+  if (!vals.length) return 0;
+  return Math.round(vals.reduce((a,b) => a+b, 0) / vals.length);
+}
+function starsHtml(r) {
+  const rt = r.ratings || {};
+  const people = [
+    {key:'masami',label:'まさみ',cls:'#4A90E2'},
+    {key:'yuko',  label:'ゆうこ', cls:'#FF85A1'},
+    {key:'kotomi',label:'ことみ',cls:'#FF8C42'},
+  ];
+  const hasAny = Object.values(rt).some(v => v > 0);
+  if (!hasAny) return '<span style="color:#CCC;font-size:12px;font-weight:800">未評価</span>';
+  return people.map(({key,label,cls}) => {
+    const v = rt[key]||0;
+    const s = v ? '★'.repeat(v)+'☆'.repeat(5-v) : '☆☆☆☆☆';
+    return `<span style="font-size:11px;font-weight:800;color:#AAA">${label}:</span><span style="color:${cls};font-size:14px;letter-spacing:-1px">${s}</span>`;
+  }).join('　');
+}
+
+// ===== フィルター =====
+function renderGenreFilters() {
+  document.getElementById('genre-filters').innerHTML = getAllGenres().map(g =>
+    `<button class="filter-chip ${activeGenres.has(g)?'on':''}" onclick="toggleGenre('${g}')">${g}</button>`
+  ).join('');
+}
+function toggleGenre(g) {
+  activeGenres.has(g) ? activeGenres.delete(g) : activeGenres.add(g);
+  renderGenreFilters();
+}
+function renderListGenreFilters() {
+  const el = document.getElementById('list-genre-filters');
+  if (!el) return;
+  el.innerHTML = getAllGenres().map(g =>
+    `<button class="filter-chip ${listGenres.has(g)?'on':''}" onclick="toggleListGenre('${g}')">${g}</button>`
+  ).join('');
+}
+function toggleListGenre(g) {
+  listGenres.has(g) ? listGenres.delete(g) : listGenres.add(g);
+  renderListGenreFilters(); renderList();
+}
+function toggleScene(scene) {
+  activeScenes.has(scene) ? activeScenes.delete(scene) : activeScenes.add(scene);
+  ['morning','lunch','dinner'].forEach(s => {
+    const btn = document.getElementById('scene-'+s);
+    if (btn) btn.classList.toggle('on', activeScenes.has(s));
+  });
+}
+function toggleListScene(scene) {
+  listScenes.has(scene) ? listScenes.delete(scene) : listScenes.add(scene);
+  ['morning','lunch','dinner'].forEach(s => {
+    const btn = document.getElementById('list-scene-'+s);
+    if (btn) btn.classList.toggle('on', listScenes.has(s));
+  });
+  renderList();
+}
+
+// ===== ランダム =====
+function spinRandom() {
+  let pool = restaurants.filter(r => r.status !== 'want');
+  if (activeGenres.size > 0) pool = pool.filter(r => {
+    const gs = Array.isArray(r.genres) ? r.genres : [];
+    return gs.some(g => activeGenres.has(g));
+  });
+  if (activeScenes.size > 0) pool = pool.filter(r => [...activeScenes].some(s => r[s]));
+  const el = document.getElementById('spin-result');
+  const detail = document.getElementById('spin-detail');
+  if (!pool.length) {
+    el.textContent = '条件に合うお店がないよ😢';
+    el.classList.remove('found');
+    detail.textContent = 'フィルターを外してみてね';
+    return;
+  }
+  let count = 0;
+  detail.textContent = '';
+  el.classList.remove('found');
+  const interval = setInterval(() => {
+    const r = pool[Math.floor(Math.random() * pool.length)];
+    el.style.opacity = 0.3;
+    el.textContent = r.name;
+    count++;
+    if (count > 16) {
+      clearInterval(interval);
+      const final = pool[Math.floor(Math.random() * pool.length)];
+      el.style.opacity = 1;
+      el.textContent = final.name;
+      el.classList.add('found');
+      const gs = Array.isArray(final.genres) ? final.genres.join(' · ') : '';
+      detail.textContent = `${gs}  ·  ${budgetLabel(final.budget)}${avgStars(final) ? '  ·  '+'⭐'.repeat(avgStars(final)) : ''}`;
+    }
+  }, 70);
+}
+
+// ===== Discover =====
+function renderDiscoverChips() {
+  document.getElementById('discover-chips').innerHTML = getAllGenres().map(g =>
+    `<button class="discover-chip" onclick="openMapSearch('近くの ${g}')">${g}</button>`
+  ).join('');
+}
+function openMapSearch(q) { window.open('https://www.google.com/maps/search/'+encodeURIComponent(q), '_blank'); }
+
+// ===== リスト =====
+function renderList() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  let filtered = restaurants.filter(r => {
+    const gs = Array.isArray(r.genres) ? r.genres.join(' ') : '';
+    return r.name.toLowerCase().includes(q) || gs.toLowerCase().includes(q) || (r.memo||'').toLowerCase().includes(q);
+  });
+  if (listGenres.size > 0) filtered = filtered.filter(r => {
+    const gs = Array.isArray(r.genres) ? r.genres : [];
+    return gs.some(g => listGenres.has(g));
+  });
+  if (listScenes.size > 0) filtered = filtered.filter(r => [...listScenes].some(s => r[s]));
+  const el = document.getElementById('restaurant-list');
+  if (!filtered.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">🍔</div>お店がまだないよ！<br>＋ボタンで追加してね</div>`;
+    return;
+  }
+  filtered.sort((a,b) => avgStars(b) - avgStars(a));
+  el.innerHTML = filtered.map(r => {
+    const gs = Array.isArray(r.genres) ? r.genres : [];
+    const ga = gs.join(' · ')||'その他';
+    const gl = gs[0]||'その他';
+    const accentColor = GENRE_COLORS[gl] || '#9B5DE5';
+    const badgeClass = r.status==='new'?'new-b':r.status==='want'?'want-b':'';
+    const badgeText  = r.status==='new'?'🆕 NEW':r.status==='want'?'💛 行きたい':gl;
+    const rt = r.ratings||{};
+    const people = [{k:'masami',c:'#4A90E2'},{k:'yuko',c:'#FF85A1'},{k:'kotomi',c:'#FF8C42'}];
+    return `
+    <div class="restaurant-card ${r.status}" onclick="openDetail(${r.id})">
+      <svg class="rc-deco" width="80" height="80" viewBox="0 0 80 80" fill="none">
+        <circle cx="65" cy="65" r="45" fill="${accentColor}"/>
+      </svg>
+      <div class="rc-top">
+        <div class="rc-name">${r.name}</div>
+        <div class="rc-badge ${badgeClass}">${badgeText}</div>
+      </div>
+      <div class="rc-meta">
+        <span>${ga}</span>
+        <span>${budgetLabel(r.budget)}</span>
+        ${r.morning ? '<span>🌅</span>' : ''}
+        ${r.lunch   ? '<span>🌤️</span>' : ''}
+        ${r.dinner  ? '<span>🌙</span>' : ''}
+      </div>
+      <div style="display:flex;gap:10px;margin-top:6px;flex-wrap:wrap">
+        ${people.map(({k,c})=>{
+          const v=rt[k]||0;
+          return `<span style="color:${c};font-size:13px;letter-spacing:-1px">${v?'★'.repeat(v)+'☆'.repeat(5-v):'☆☆☆☆☆'}</span>`;
+        }).join('')}
+      </div>
+      ${r.memo ? `<div class="rc-memo">${r.memo}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// ===== 詳細 =====
+function openDetail(id) {
+  detailId = id;
+  const r = restaurants.find(x => x.id===id);
+  const gs = Array.isArray(r.genres) ? r.genres : [];
+  document.getElementById('detail-content').innerHTML = `
+    <div class="detail-name">${r.name}</div>
+    <div class="detail-meta">
+      <span>${gs.join(' · ')||'その他'}</span>
+      <span>${budgetLabel(r.budget)}</span>
+      <span>${statusLabel(r.status)}</span>
+      ${r.morning ? '<span>🌅 モーニング</span>':''}
+      ${r.lunch   ? '<span>🌤️ 昼食</span>':''}
+      ${r.dinner  ? '<span>🌙 夕食</span>':''}
+    </div>
+    <div style="margin-bottom:14px;line-height:2">${starsHtml(r)}</div>
+    <div class="detail-memo">${r.memo||'メモなし'}</div>
+  `;
+  document.getElementById('modal-detail').classList.add('open');
+}
+function editFromDetail() { closeModal('modal-detail'); openEdit(detailId); }
+
+// ===== フォーム：ジャンル =====
+function renderGenreCheckGrid(selected=[]) {
+  document.getElementById('genre-check-grid').innerHTML = getAllGenres().map(g =>
+    `<button type="button" class="genre-chip-check ${selected.includes(g)?'checked':''}" onclick="this.classList.toggle('checked')">${g}</button>`
+  ).join('');
+}
+function getCheckedGenres() {
+  return [...document.querySelectorAll('#genre-check-grid .genre-chip-check.checked')].map(el => el.textContent);
+}
+function addCustomGenre() {
+  const input = document.getElementById('f-genre-custom');
+  const val = input.value.trim(); if (!val) return;
+  const grid = document.getElementById('genre-check-grid');
+  const ex = [...grid.querySelectorAll('.genre-chip-check')].find(el => el.textContent===val);
+  if (ex) { ex.classList.add('checked'); }
+  else {
+    const btn = document.createElement('button');
+    btn.type='button'; btn.className='genre-chip-check checked';
+    btn.textContent=val; btn.onclick=()=>btn.classList.toggle('checked');
+    grid.appendChild(btn);
+  }
+  input.value='';
+}
+
+// ===== フォーム：シーン =====
+function toggleMealChip(scene) {
+  const cb = document.getElementById('f-'+scene);
+  cb.checked = !cb.checked;
+  document.getElementById('chip-'+scene).classList.toggle('checked', cb.checked);
+}
+function setMealChips(m,l,d) {
+  ['morning','lunch','dinner'].forEach((s,i) => {
+    const v=[m,l,d][i];
+    document.getElementById('f-'+s).checked=!!v;
+    document.getElementById('chip-'+s).classList.toggle('checked',!!v);
+  });
+}
+
+// ===== Stars =====
+function setStar(person, n) {
+  currentRatings[person] = n;
+  document.querySelectorAll(`#star-${person} span`).forEach((s,i) => s.classList.toggle('on', i < n));
+}
+function resetStars() {
+  currentRatings = { masami:0, yuko:0, kotomi:0 };
+  ['masami','yuko','kotomi'].forEach(p => {
+    document.querySelectorAll(`#star-${p} span`).forEach(s => s.classList.remove('on'));
+  });
+}
+function restoreStars(ratings) {
+  currentRatings = { masami: ratings?.masami||0, yuko: ratings?.yuko||0, kotomi: ratings?.kotomi||0 };
+  ['masami','yuko','kotomi'].forEach(p => {
+    document.querySelectorAll(`#star-${p} span`).forEach((s,i) => s.classList.toggle('on', i < currentRatings[p]));
+  });
+}
+
+// ===== 追加/編集/削除 =====
+function openAdd() {
+  editingId=null;
+  document.getElementById('modal-title').textContent='🍽️ お店を追加';
+  document.getElementById('f-name').value='';
+  renderGenreCheckGrid([]);
+  document.getElementById('f-genre-custom').value='';
+  document.getElementById('f-budget').value='~1000';
+  document.getElementById('f-status').value='visited';
+  document.getElementById('f-memo').value='';
+  document.getElementById('btn-delete-edit').style.display='none';
+  resetStars(); setMealChips(false,false,false);
+  document.getElementById('modal-edit').classList.add('open');
+}
+function openEdit(id) {
+  editingId=id;
+  const r=restaurants.find(x=>x.id===id);
+  const gs=Array.isArray(r.genres)?r.genres:[];
+  document.getElementById('modal-title').textContent='✏️ お店を編集';
+  document.getElementById('f-name').value=r.name;
+  renderGenreCheckGrid(gs);
+  document.getElementById('f-genre-custom').value='';
+  document.getElementById('f-budget').value=r.budget;
+  document.getElementById('f-status').value=r.status;
+  document.getElementById('f-memo').value=r.memo||'';
+  document.getElementById('btn-delete-edit').style.display='inline-block';
+  restoreStars(r.ratings||{}); setMealChips(r.morning,r.lunch,r.dinner);
+  document.getElementById('modal-edit').classList.add('open');
+}
+async function saveRestaurant() {
+  const name=document.getElementById('f-name').value.trim();
+  if (!name) { alert('店名を入力してね'); return; }
+  const data = {
+    name, genres:getCheckedGenres(),
+    budget:document.getElementById('f-budget').value,
+    ratings:{...currentRatings},
+    status:document.getElementById('f-status').value,
+    morning:document.getElementById('f-morning').checked,
+    lunch:document.getElementById('f-lunch').checked,
+    dinner:document.getElementById('f-dinner').checked,
+    memo:document.getElementById('f-memo').value.trim(),
+  };
+  if (editingId) {
+    data.id = editingId;
+    const idx=restaurants.findIndex(r=>r.id===editingId);
+    restaurants[idx]={...restaurants[idx],...data};
+  } else {
+    data.id = Date.now();
+    restaurants.push(data);
+  }
+  closeModal('modal-edit');
+  renderAll();
+  await apiSave(data);
+}
+async function deleteRestaurant() {
+  if (!confirm('このお店を削除しますか？')) return;
+  const id = editingId;
+  restaurants = restaurants.filter(r=>r.id!==id);
+  closeModal('modal-edit');
+  renderAll();
+  await apiDelete(id);
+}
+
+function renderAll() {
+  renderGenreFilters();
+  renderDiscoverChips();
+  renderListGenreFilters();
+  renderList();
+}
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function switchPage(name, btn) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  btn.classList.add('active');
+  if (name==='random') { renderGenreFilters(); renderDiscoverChips(); }
+  if (name==='list') { renderListGenreFilters(); renderList(); }
+}
+
+// ===== 起動 =====
+fetchRestaurants();
+
+document.querySelectorAll('.modal-bg').forEach(bg =>
+  bg.addEventListener('click', e => { if (e.target===bg) bg.classList.remove('open'); })
+);
+</script>
+<!-- ローディング -->
+<div class="loading-overlay" id="loading-overlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text">データを読み込み中…</div>
+</div>
+
+</body>
+</html>
