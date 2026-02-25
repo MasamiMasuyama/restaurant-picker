@@ -749,11 +749,13 @@ async function fetchRestaurants() {
   showLoading(true);
   setSyncStatus('syncing', '読み込み中…');
   try {
-    const res = await fetch(GAS_URL);
-    restaurants = await res.json();
+    const res = await fetch(GAS_URL, { redirect: 'follow' });
+    const text = await res.text();
+    restaurants = JSON.parse(text);
     setSyncStatus('ok', '同期済み');
   } catch(e) {
-    setSyncStatus('error', '読み込み失敗 — オフライン？');
+    console.error('fetch error:', e);
+    setSyncStatus('error', '読み込み失敗 — ' + e.message);
     restaurants = [];
   }
   showLoading(false);
@@ -763,8 +765,9 @@ async function fetchRestaurants() {
 async function apiSave(restaurant) {
   setSyncStatus('syncing', '保存中…');
   try {
-    await fetch(GAS_URL, {
+    const res = await fetch(GAS_URL, {
       method: 'POST',
+      redirect: 'follow',
       body: JSON.stringify({ action: 'save', restaurant }),
     });
     setSyncStatus('ok', '保存しました ✓');
@@ -778,6 +781,7 @@ async function apiDelete(id) {
   try {
     await fetch(GAS_URL, {
       method: 'POST',
+      redirect: 'follow',
       body: JSON.stringify({ action: 'delete', id }),
     });
     setSyncStatus('ok', '削除しました ✓');
